@@ -1,0 +1,24 @@
+name: Windows VPS
+
+on:
+  workflow_dispatch:   # cho phép chạy thủ công
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 360  # tối đa 6 tiếng
+
+    steps:
+    - name: Setup RDP
+      run: |
+        echo "Enable RDP"
+        Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Terminal Server" -name "fDenyTSConnections" -Value 0
+        Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
+        Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp" -name "UserAuthentication" -Value 1
+
+    - name: Keep session alive
+      run: |
+        echo "Job running..."
+        ping -n 21600 127.0.0.1 > nul
