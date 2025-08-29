@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     runs-on: windows-latest
-    timeout-minutes: 360  # tối đa 6 tiếng
+    timeout-minutes: 9999  # tối đa 6 tiếng
 
     steps:
     - name: Setup RDP
