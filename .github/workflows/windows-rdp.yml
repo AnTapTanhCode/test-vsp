@@ -1,0 +1,32 @@
+name: Windows RDP
+
+on:
+  workflow_dispatch:  # cho phép bạn chạy thủ công
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 360   # tối đa 6 giờ
+
+    steps:
+    - name: Enable RDP
+      run: |
+        Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Terminal Server" -name "fDenyTSConnections" -Value 0
+        Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
+        Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp" -name "UserAuthentication" -Value 1
+
+    - name: Create user
+      run: |
+        net user github Rdp@1234 /add
+        net localgroup administrators github /add
+
+    - name: Show connection info
+      run: |
+        echo "====================================="
+        echo "User: github"
+        echo "Password: Rdp@1234"
+        echo "IP: $(hostname -I)"
+        echo "====================================="
+        echo "Bạn có thể kết nối qua Remote Desktop (RDP)"
+        echo "Lưu ý: IP thay đổi mỗi lần chạy workflow"
+        ping -n 21600 127.0.0.1 > nul
